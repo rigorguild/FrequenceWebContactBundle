@@ -3,8 +3,9 @@
 namespace FrequenceWeb\Bundle\ContactBundle\EventDispatcher\Listener;
 
 use FrequenceWeb\Bundle\ContactBundle\EventDispatcher\Event\MessageSubmitEvent;
-use Symfony\Component\Templating\EngineInterface;
-use Symfony\Component\Translation\TranslatorInterface;
+use Swift_Mailer;
+use Symfony\Contracts\Translation\TranslatorInterface;
+use Twig\Environment;
 
 /**
  * Listener for contact events, that sends emails
@@ -14,7 +15,7 @@ use Symfony\Component\Translation\TranslatorInterface;
 class EmailContactListener
 {
     /**
-     * @var \Swift_Mailer
+     * @var Swift_Mailer
      */
     protected $mailer;
 
@@ -24,35 +25,24 @@ class EmailContactListener
     protected $translator;
 
     /**
-     * @var EngineInterface
+     * @var Environment
      */
-    protected $templating;
+    protected $twig;
 
     /**
      * @var array
      */
     protected $config;
 
-    /**
-     * @param \Swift_Mailer       $mailer
-     * @param EngineInterface     $templating
-     * @param TranslatorInterface $translator
-     * @param array<string>       $config     Configuration from DIC
-     */
-    public function __construct(\Swift_Mailer $mailer, EngineInterface $templating, TranslatorInterface $translator, array $config)
+    public function __construct(Swift_Mailer $mailer, Environment $twig, TranslatorInterface $translator, array $config)
     {
         $this->mailer     = $mailer;
-        $this->templating = $templating;
+        $this->twig = $twig;
         $this->translator = $translator;
         $this->config     = $config;
     }
 
-    /**
-     * Called when onMessageSubmit event is fired
-     *
-     * @param MessageSubmitEvent $event
-     */
-    public function onMessageSubmit(MessageSubmitEvent $event)
+    public function onMessageSubmit(MessageSubmitEvent $event): void
     {
         $contact = $event->getContact();
 
@@ -66,16 +56,16 @@ class EmailContactListener
         $message->addReplyTo($contact->getEmail(), $contact->getName());
         $message->addTo($this->config['to']);
         $message->addPart(
-            $this->templating->render(
-                'FrequenceWebContactBundle:Mails:mail.html.twig',
-                array('contact' => $contact)
+            $this->twig->render(
+                '@FrequenceWebContactBundle/Mails/mail.html.twig',
+                ['contact' => $contact]
             ),
             'text/html'
         );
         $message->addPart(
-            $this->templating->render(
-                'FrequenceWebContactBundle:Mails:mail.txt.twig',
-                array('contact' => $contact)
+            $this->twig->render(
+                '@FrequenceWebContactBundle/Mails/mail.txt.twig',
+                ['contact' => $contact]
             ),
             'text/plain'
         );

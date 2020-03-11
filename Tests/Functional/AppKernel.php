@@ -32,4 +32,9 @@ class AppKernel extends Kernel
     {
         $loader->load(__DIR__.'/config.yml');
     }
+
+    public function getProjectDir()
+    {
+        return __DIR__;
+    }
 }

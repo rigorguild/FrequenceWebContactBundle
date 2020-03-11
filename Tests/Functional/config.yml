@@ -8,13 +8,17 @@ framework:
     validation:
         enabled: true
     router:
-        resource: %kernel.root_dir%/routing.yml
-    templating:
-        engines: [twig]
+        resource: '%kernel.root_dir%/routing.yml'
     profiler: { only_exceptions: false }
 
 swiftmailer:
+    url: null://localhost
     disable_delivery: true
 
 frequence_web_contact:
-    to: foo@bar.baz
+    to: 'foo@bar.baz'
+
+twig:
+    debug: true
+    paths:
+        '%kernel.project_dir%/../../Resources/views': 'FrequenceWebContactBundle'

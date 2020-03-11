@@ -11,10 +11,10 @@
     </parameters>
 
     <services>
-        <service id="frequence_web_contact.model" class="%frequence_web_contact.model.class%" />
+        <service id="frequence_web_contact.model" class="%frequence_web_contact.model.class%" public="true" autowire="false" />
         <service id="frequence_web_contact.email_listener" class="%frequence_web_contact.email_listener.class%">
             <argument type="service" id="mailer" />
-            <argument type="service" id="templating" />
+            <argument type="service" id="twig" />
             <argument type="service" id="translator.default" />
         </service>
     </services>

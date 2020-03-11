@@ -3,7 +3,7 @@
 namespace FrequenceWeb\Bundle\ContactBundle\EventDispatcher\Event;
 
 use FrequenceWeb\Bundle\ContactBundle\Model\Contact;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * This event is thrown each time an user send a message (Only and Only if validation pass)

@@ -2,7 +2,11 @@
     "name": "frequence-web/contact-bundle",
     "type": "symfony-bundle",
     "description": "Event-based contact bundle",
-    "keywords": ["contact", "bundle", "event"],
+    "keywords": [
+        "contact",
+        "bundle",
+        "event"
+    ],
     "license": "MIT",
     "authors": [
         {
@@ -11,26 +15,36 @@
         }
     ],
     "require": {
-        "php":                      "^5.3.3 || ^7.0",
-        "symfony/framework-bundle": "~2.8 || ^3.0",
-        "symfony/form":             "~2.8 || ^3.0",
-        "symfony/twig-bundle":      "~2.8 || ^3.0",
-        "symfony/validator":        "~2.8 || ^3.0"
+        "php": "^7.4",
+        "symfony/framework-bundle": "^4.4 || ^5.0",
+        "symfony/form": "^4.4",
+        "symfony/twig-bundle": "^4.4",
+        "symfony/validator": "^4.4"
     },
     "require-dev": {
-        "phpunit/phpunit":             "^3.0",
-        "symfony/browser-kit":         "~2.1 || ^3.0",
-        "symfony/css-selector":        "~2.1 || ^3.0",
-        "symfony/class-loader":        "~2.1 || ^3.0",
-        "symfony/dom-crawler":         "~2.1 || ^3.0",
-        "symfony/finder":              "~2.1 || ^3.0",
-        "symfony/swiftmailer-bundle":  "~2.1 || ^2.5"
+        "symfony/browser-kit": "^4.4",
+        "symfony/css-selector": "^4.4",
+        "symfony/dom-crawler": "^4.4",
+        "symfony/finder": "^4.4",
+        "symfony/swiftmailer-bundle": "^3.4",
+        "symfony/phpunit-bridge": "^4.4",
+        "symfony/yaml": "^4.4",
+        "symfony/templating": "^4.4",
+        "symfony/translation": "^4.4",
+        "symfony/dependency-injection": "^4.4",
+        "symfony/config": "^4.4",
+        "symfony/routing": "^4.4"
     },
     "suggest": {
         "symfony/swiftmailer-bundle": "If your want to use the (default) mail listener."
     },
     "autoload": {
-        "psr-0": { "FrequenceWeb\\Bundle\\ContactBundle": "" }
+        "psr-0": {
+            "FrequenceWeb\\Bundle\\ContactBundle": ""
+        }
     },
-    "target-dir": "FrequenceWeb/Bundle/ContactBundle"
+    "target-dir": "FrequenceWeb/Bundle/ContactBundle",
+    "config": {
+        "bin-dir": "bin/"
+    }
 }

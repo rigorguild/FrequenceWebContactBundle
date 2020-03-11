@@ -4,29 +4,33 @@ namespace FrequenceWeb\Bundle\ContactBundle\Controller;
 
 use FrequenceWeb\Bundle\ContactBundle\EventDispatcher\ContactEvents;
 use FrequenceWeb\Bundle\ContactBundle\EventDispatcher\Event\MessageSubmitEvent;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use FrequenceWeb\Bundle\ContactBundle\Model\Contact;
+use Psr\Container\ContainerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Contracts\Service\ServiceSubscriberInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Contact controller
  *
  * @author Yohan Giarelli <yohan@giarel.li>
  */
-class DefaultController implements ContainerAwareInterface
+class DefaultController extends AbstractController
 {
-    use ContainerAwareTrait;
-
     /**
      * Action that displays the contact form
      *
      * @param Request $request
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
-    public function indexAction(Request $request)
+    public function indexAction(Request $request): Response
     {
         $this->container->get('session')->set('_fw_contact_referer', $request->getUri());
 
@@ -38,17 +42,19 @@ class DefaultController implements ContainerAwareInterface
      *
      * @param  Request $request
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
-    public function submitAction(Request $request)
+    public function submitAction(Request $request): Response
     {
         $form = $this->getForm();
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             // Send the event for message handling (send mail, add to DB, don't care)
             $event = new MessageSubmitEvent($form->getData());
-            $this->container->get('event_dispatcher')->dispatch(ContactEvents::onMessageSubmit, $event);
+            /** @var EventDispatcherInterface $eventDispatcher */
+            $eventDispatcher = $this->container->get('event_dispatcher');
+            $eventDispatcher->dispatch($event, ContactEvents::onMessageSubmit);
 
             // Let say the user it's ok
             $message = $this->container->get('translator')->trans('contact.submit.success', [], 'FrequenceWebContactBundle');
@@ -71,12 +77,12 @@ class DefaultController implements ContainerAwareInterface
      *
      * @param  FormInterface $form
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
     protected function renderFormResponse(FormInterface $form)
     {
-        return $this->container->get('templating')->renderResponse(
-            'FrequenceWebContactBundle:Default:index.html.twig',
+        return $this->render(
+            '@FrequenceWebContactBundle/Default/index.html.twig',
             ['form' => $form->createView()]
         );
     }
@@ -86,11 +92,24 @@ class DefaultController implements ContainerAwareInterface
      *
      * @return FormInterface
      */
-    protected function getForm()
+    protected function getForm(): FormInterface
     {
         return $this->container->get('form.factory')->create(
             $this->container->getParameter('frequence_web_contact.type'),
             $this->container->get('frequence_web_contact.model')
         );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public static function getSubscribedServices()
+    {
+        $dependentServices = parent::getSubscribedServices();
+
+        return array_merge($dependentServices, [
+            'event_dispatcher' => EventDispatcherInterface::class,
+            'translator' => TranslatorInterface::class,
+        ]);
     }
 }
